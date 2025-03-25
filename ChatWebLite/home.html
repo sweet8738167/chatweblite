@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatWebLite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-around;
+            background: #333;
+            padding: 10px;
+            width: 100%;
+            max-width: 600px;
+            color: white;
+        }
+
+        .nav button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .post-area textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .post-list {
+            margin-top: 20px;
+        }
+
+        .post {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .like-section {
+            margin-top: 10px;
+        }
+
+        .like-section span {
+            cursor: pointer;
+            color: red;
+        }
+
+        .comment-section {
+            margin-top: 10px;
+        }
+
+        .profile, .settings, .info {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <button onclick="showSection('home')">Home</button>
+        <button onclick="showSection('profile')">Perfil</button>
+        <button onclick="showSection('info')">Criador</button>
+        <button onclick="openSettings()">Definições</button>
+    </div>
+
+    <div id="home" class="container">
+        <h2>Bem-vindo ao ChatWebLite!</h2>
+        <div class="post-area">
+            <textarea id="post-content" placeholder="O que você está pensando?"></textarea>
+            <button onclick="publishPost()">Publicar</button>
+        </div>
+        <div class="post-list" id="post-list"></div>
+    </div>
+
+    <div id="profile" class="container profile">
+        <h2>Perfil</h2>
+        <p><strong>Nome:</strong> <span id="profile-name"></span></p>
+        <p><strong>Email:</strong> <span id="profile-email"></span></p>
+        <p><strong>Data de Criação:</strong> <span id="profile-date"></span></p>
+        <p><strong>Hora:</strong> <span id="profile-time"></span></p>
+    </div>
+
+    <div id="info" class="container info">
+        <h2>Informações Do Criador</h2>
+        <p><strong>Nome:</strong> <span id="profile-name-info"></span></p>
+        <p><strong>WhatsApp:</strong> +258 873892920</p>
+        <p><strong>Instagram:</strong> lilsweet258</p>
+        <p><strong>Capacitação:</strong> Programador OFC da ChatWebLite</p>
+    </div>
+
+    <script>
+        let userName = localStorage.getItem("userName") || "Usuário";
+        let userEmail = localStorage.getItem("userEmail") || "exemplo@email.com";
+
+        document.getElementById("profile-name").innerText = userName;
+        document.getElementById("profile-name-info").innerText = userName;
+        document.getElementById("profile-email").innerText = userEmail;
+        document.getElementById("profile-date").innerText = new Date().toLocaleDateString();
+        document.getElementById("profile-time").innerText = new Date().toLocaleTimeString();
+
+        // Carregar publicações armazenadas no localStorage
+        loadPosts();
+
+        function publishPost() {
+            const content = document.getElementById("post-content").value;
+            if (content.trim() === "") return alert("Escreva algo!");
+
+            const postList = document.getElementById("post-list");
+            const post = document.createElement("div");
+            post.classList.add("post");
+            post.innerHTML = `
+                <p><strong>${userName}:</strong> ${content}</p>
+                <div class="like-section">
+                    <span onclick="likePost(this)">❤️ Curtir</span> | <span class="like-count">0</span> curtidas
+                    <div class="liked-by"></div>
+                </div>
+                <div class="comment-section">
+                    <input type="text" placeholder="Comentar..." onkeypress="commentPost(event, this)">
+                    <div class="comments"></div>
+                </div>
+            `;
+            postList.prepend(post);
+
+            // Salvar publicação no localStorage
+            savePost(content);
+            document.getElementById("post-content").value = "";
+        }
+
+        function savePost(content) {
+            let posts = JSON.parse(localStorage.getItem("posts")) || [];
+            posts.push({ userName, content });
+            localStorage.setItem("posts", JSON.stringify(posts));
+        }
+
+        function loadPosts() {
+            const posts = JSON.parse(localStorage.getItem("posts")) || [];
+            const postList = document.getElementById("post-list");
+            posts.forEach(postData => {
+                const post = document.createElement("div");
+                post.classList.add("post");
+                post.innerHTML = `
+                    <p><strong>${postData.userName}:</strong> ${postData.content}</p>
+                    <div class="like-section">
+                        <span onclick="likePost(this)">❤️ Curtir</span> | <span class="like-count">0</span> curtidas
+                        <div class="liked-by"></div>
+                    </div>
+                    <div class="comment-section">
+                        <input type="text" placeholder="Comentar..." onkeypress="commentPost(event, this)">
+                        <div class="comments"></div>
+                    </div>
+                `;
+                postList.prepend(post);
+            });
+        }
+
+        function likePost(button) {
+            const likeCount = button.nextElementSibling;
+            const likedBy = button.nextElementSibling.nextElementSibling;
+            let count = parseInt(likeCount.innerText);
+
+            if (!likedBy.innerText.includes(userName)) {
+                count += 1;
+                likedBy.innerHTML += `<p>${userName} curtiu</p>`;
+            } else {
+                count -= 1;
+                likedBy.innerHTML = likedBy.innerHTML.replace(`<p>${userName} curtiu</p>`, "");
+            }
+            likeCount.innerText = count;
+        }
+
+        function commentPost(event, input) {
+            if (event.key !== "Enter") return;
+            const commentText = input.value.trim();
+            if (commentText === "") return;
+            
+            const commentsDiv = input.nextElementSibling;
+            const comment = document.createElement("p");
+            comment.innerHTML = `<strong>${userName}:</strong> ${commentText}`;
+            commentsDiv.appendChild(comment);
+            input.value = "";
+        }
+
+        function showSection(section) {
+            document.getElementById("home").style.display = "none";
+            document.getElementById("profile").style.display = "none";
+            document.getElementById("info").style.display = "none";
+            document.getElementById(section).style.display = "block";
+        }
+
+        function openSettings() {
+            window.location.href = "settings.html";
+        }
+    </script>
+</body>
+</html>

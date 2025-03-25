@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatWebLite - Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://www.wallpaperbetter.com/desktop/1920x1080/5/98/195245.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #444;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .switch {
+            margin-top: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="login-container">
+        <h2>Login - ChatWebLite</h2>
+        <input type="text" id="login-email" placeholder="Digite seu e-mail" required>
+        <input type="password" id="login-password" placeholder="Digite sua senha" required>
+        <button onclick="login()">Entrar</button>
+        <div class="switch" onclick="toggleForms()">Não tem uma conta? Cadastre-se</div>
+    </div>
+
+    <div class="container" id="register-container" style="display: none;">
+        <h2>Cadastro - ChatWebLite</h2>
+        <input type="text" id="register-email" placeholder="Digite seu e-mail" required>
+        <input type="password" id="register-password" placeholder="Digite sua senha" required>
+        <button onclick="register()">Cadastrar</button>
+        <div class="switch" onclick="toggleForms()">Já tem uma conta? Faça login</div>
+    </div>
+
+    <div class="footer">
+        Criado por Renildo Rafael Diquissone | Todos os direitos reservados © 2025
+    </div>
+
+    <script>
+        function toggleForms() {
+            document.getElementById("login-container").style.display =
+                document.getElementById("login-container").style.display === "none" ? "block" : "none";
+            document.getElementById("register-container").style.display =
+                document.getElementById("register-container").style.display === "none" ? "block" : "none";
+        }
+
+        function register() {
+            const email = document.getElementById("register-email").value;
+            const password = document.getElementById("register-password").value;
+
+            if (!email || !password) {
+                alert("Por favor, preencha todos os campos.");
+                return;
+            }
+
+            if (localStorage.getItem(email)) {
+                alert("Este e-mail já está cadastrado.");
+                return;
+            }
+
+            localStorage.setItem(email, password);
+            alert("Cadastro realizado com sucesso! Agora faça login.");
+            toggleForms();
+        }
+
+        function login() {
+            const email = document.getElementById("login-email").value;
+            const password = document.getElementById("login-password").value;
+
+            if (!email || !password) {
+                alert("Por favor, preencha todos os campos.");
+                return;
+            }
+
+            const storedPassword = localStorage.getItem(email);
+            if (storedPassword && storedPassword === password) {
+                localStorage.setItem("userEmail", email);
+                window.location.href = "home.html";
+            } else {
+                alert("E-mail ou senha incorretos.");
+            }
+        }
+    </script>
+</body>
+</html>

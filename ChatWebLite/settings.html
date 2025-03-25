@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Definições</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            color: white;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            color: black;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #ff7e5f;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #ff5733;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Definições</h2>
+        <button onclick="changeName()">Alterar Nome</button>
+        <button onclick="changeEmail()">Alterar Email</button>
+        <button onclick="goBack()">Voltar</button>
+    </div>
+
+    <script>
+        function changeName() {
+            let newName = prompt("Digite seu novo nome:");
+            if (newName) {
+                localStorage.setItem("userName", newName);
+                alert("Nome atualizado!");
+            }
+        }
+
+        function changeEmail() {
+            let newEmail = prompt("Digite seu novo email:");
+            if (newEmail) {
+                localStorage.setItem("userEmail", newEmail);
+                alert("Email atualizado!");
+            }
+        }
+
+        function goBack() {
+            window.location.href = "home.html";
+        }
+    </script>
+
+</body>
+</html>
